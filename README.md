@@ -9,7 +9,7 @@
 ## To-do List
 
 - [ ] Release full code
-- [x] Preview display
+- [x] Preview
 
 
 Official implementation of **"A Geometry-Aware Lifting and Structural Refinement Framework for Camera-Only BEV Perception"**.
@@ -19,7 +19,7 @@ We propose two complementary modules on top of the Lift-Splat-Shoot (LSS) framew
 - **PAND** (Perspective-Aware Non-uniform Depth Discretization): replaces metric-uniform depth bins with log-domain (SID) spacing, motivated by the ∂u/∂d ∝ 1/d² perspective geometry. With only K=41 bins it matches or exceeds the performance of K=61 uniform bins.
 - **FEC-BEV** (Frequency-Edge Cooperative BEV Refinement): a lightweight three-branch BEV feature enhancement module (low-frequency, high-frequency edge, coordinate-gate) that improves segmentation boundary sharpness with negligible overhead.
 
-Together, the full model achieves **42.23% vehicle IoU** (448×800 input) and **39.53% vehicle IoU** (128×352 input, 50.4 FPS) on nuScenes BEV segmentation, while requiring only **0.30 GiB** GPU memory at inference — **11× / 4.2× less** than contemporary camera-BEV baselines.
+Together, the full model achieves **37.8% vehicle IoU** (224 x 480 resolution) and **39.5% vehicle IoU** (480 × 800 resolution) on nuScenes BEV segmentation, while requiring only **0.30 GiB** GPU memory at inference — **4.2× less** than contemporary camera-BEV baselines.
 
 ---
 
@@ -52,7 +52,6 @@ pip install -r requirements.txt
 ### Download nuScenes
 
 Register and download **nuScenes v1.0** from [nuscenes.org](https://www.nuscenes.org/download):
-
 - **Trainval** split(blobs only)
 - **Map expansion**
 
@@ -98,17 +97,16 @@ All models are evaluated on the nuScenes BEV vehicle segmentation benchmark.
 
 | Config | Backbone | Depth | K | FEC-BEV | Input | IoU↑ (no-vis) | IoU↑ (vis-filt) | FPS | Mem (GiB) | Ckpt |
 |---|---|---|---|---|---|---|---|---|---|---|
-| [`EN-b4_pand_4-45-41_fec_bev.yaml`](configs/ablation/EN-b4_pand_4-45-41_fec_bev.yaml) | EfficientNet-B4 | SID (PAND) | 41 | ✓ | 128×352 | 38.40 | — | — | — | [TODO] |
-| [`EN-b4_pand_4-45-41_fec_bev_448x800.yaml`](configs/ablation/EN-b4_pand_4-45-41_fec_bev_448x800.yaml) | EfficientNet-B4 | SID (PAND) | 41 | ✓ | **448×800** | **39.86** | **42.23** | — | — | [TODO] |
+| `EN-b4_pand_4-45-41_fec_bev.yaml` | EfficientNet-B4 | PAND | 41 | ✓ | 224×480 | 37.8 | 42.23 | — | — | [TODO] |
+| `EN-b4_pand_4-45-41_fec_bev_448x800.yaml` | EfficientNet-B4 | PAND | 41 | ✓ | 448×800 | 39.5 | 42.23 | — | — | [TODO] |
 
 ### Module ablation (EfficientNet-B4, 224x480)
 
 | Config | PAND | FEC-BEV | IoU↑ (no-vis) | IoU↑ (vis-filt) | Ckpt |
 |---|---|---|---|---|---|
-| [`模块消融/EN-b4_baseline_4-45-41.yaml`](configs/ablation/模块消融/EN-b4_baseline_4-45-41.yaml) | ✗ | ✗ | — | — | [TODO] |
-| [`模块消融/EN-b4_pand_4-45-41.yaml`](configs/ablation/模块消融/EN-b4_pand_4-45-41.yaml) | ✓ | ✗ | 38.20 | — | [TODO] |
-| [`模块消融/EN-b4_uniform_4-45-41_Fec_BEV.yaml`](configs/ablation/模块消融/EN-b4_uniform_4-45-41_Fec_BEV.yaml) | ✗ | ✓ | 38.30 | — | [TODO] |
-| [`EN-b4_pand_4-45-41_fec_bev.yaml`](configs/ablation/EN-b4_pand_4-45-41_fec_bev.yaml) | ✓ | ✓ | 38.40 | — | [TODO] |
+| `EN-b4_pand_4-45-41.yaml` | ✓ | ✗ | 38.20 | — | [TODO] |
+| EN-b4_uniform_4-45-41_Fec_BEV.yaml` | ✗ | ✓ | 38.30 | — | [TODO] |
+| EN-b4_pand_4-45-41_fec_bev.yaml` | ✓ | ✓ | 38.40 | — | [TODO] |
 
 ---
 
