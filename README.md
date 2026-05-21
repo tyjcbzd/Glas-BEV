@@ -1,4 +1,4 @@
-# :eyeglasses:  GLAS-BEV: A Geometry-Aware Lifting and Structural Refinement Framework for Camera-Only BEV Perception
+# :eyeglasses: GLAS-BEV: A Geometry-Aware Lifting and Structural Refinement Framework for Camera-Only BEV Perception
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange)](https://pytorch.org/)
@@ -11,15 +11,54 @@
 - [ ] Release full code
 - [x] Preview
 
+---
 
-Official implementation of **"A Geometry-Aware Lifting and Structural Refinement Framework for Camera-Only BEV Perception"**.
+Official implementation of **"GLAS-BEV: A Geometry-Aware Lifting and Structural Refinement Framework for Camera-Only BEV Perception"**.
 
-We propose two complementary modules on top of the Lift-Splat-Shoot (LSS) framework:
+## :memo: Abstract
 
-- **PAND** (Perspective-Aware Non-uniform Depth Discretization): replaces metric-uniform depth bins with log-domain (SID) spacing, motivated by the ∂u/∂d ∝ 1/d² perspective geometry. With only K=41 bins it matches or exceeds the performance of K=61 uniform bins.
-- **FEC-BEV** (Frequency-Edge Cooperative BEV Refinement): a lightweight three-branch BEV feature enhancement module (low-frequency, high-frequency edge, coordinate-gate) that improves segmentation boundary sharpness with negligible overhead.
+Camera-only bird's-eye-view (BEV) perception offers a cost-effective solution for autonomous driving scene understanding, yet Lift-Splat-Shoot based methods often suffer from **inefficient depth sampling** during view transformation and **structural degradation** after BEV aggregation. This paper proposes **GLAS-BEV**, a geometry-aware lifting and structural refinement framework for single-frame multi-camera BEV segmentation.
 
-Together, the full model achieves **37.8% vehicle IoU** (224 x 480 resolution) and **39.5% vehicle IoU** (480 × 800 resolution) on nuScenes BEV segmentation, while requiring only **0.30 GiB** GPU memory at inference — **4.2× less** than contemporary camera-BEV baselines.
+- We propose **Perspective-Aware Non-uniform Depth Discretization (PND)**, which places depth-bin centers in the log-depth domain, allocating denser sampling to geometrically sensitive near-range regions without adding parameters.
+- We propose **Frequency-Edge Cooperative BEV Refinement (FEC-BEV)** to enhance BEV features by jointly modeling low-frequency context, high-frequency boundary residuals, directional structures, edge priors, and parameter-free saliency.
+
+Experiments on the nuScenes static vehicle BEV segmentation benchmark show that GLAS-BEV consistently improves the performance of lightweight LSS-style BEV perception while maintaining competitive accuracy against stronger baselines. The model runs at **76.1 FPS** with only **0.28 GiB** peak GPU memory, indicating a favorable balance between segmentation accuracy, inference speed, and memory efficiency.
+
+### Overall framework
+
+<p align="center">
+  <img src="src/overall_framework.png" alt="GLAS-BEV overall framework" width="92%">
+</p>
+
+
+---
+
+## :sparkles: Proposed Modules
+
+### PND — Perspective-Aware Non-uniform Depth Discretization
+
+Instead of dividing the metric depth range uniformly, **PND** reallocates depth-bin centers in the log-depth domain so that near-range regions — which are geometrically more sensitive in the image-to-BEV transformation — receive denser sampling, while far-range regions are sampled more sparsely. The strategy introduces **no extra parameters** and leaves the LSS frustum and voxel-pooling interfaces unchanged, yet improves the geometric alignment between perspective-view features and the BEV plane.
+
+<p align="center">
+  <img src="src/PND.png" alt="PND non-uniform depth discretization" width="80%">
+</p>
+
+
+### FEC-BEV — Frequency-Edge Cooperative BEV Refinement
+
+**FEC-BEV** performs lightweight structural refinement on the aggregated BEV feature before prediction. It uses three complementary branches — a low-pass smoothing branch for regional context, a high-pass residual branch combined with a fixed Sobel edge prior for boundary details, and a directional pooling branch for axis-aware structures. The fused output is modulated by a parameter-free SimAM saliency block and written back through a **zero-initialized residual** connection, so the module behaves as an identity at the start of training and learns refinement progressively.
+
+<p align="center">
+  <img src="src/Fre_BEV.png" alt="FEC-BEV module structure" width="92%">
+</p>
+
+
+### Qualitative results
+
+<p align="center">
+  <img src="src/vis.mp4" alt="BEV vehicle segmentation visualization" width="92%">
+</p>
+
 
 ---
 
@@ -47,12 +86,15 @@ conda activate glas_bev
 pip install -r requirements.txt
 ```
 
+---
+
 ## :open_hands: Data Preparation
 
 ### Download nuScenes
 
 Register and download **nuScenes v1.0** from [nuscenes.org](https://www.nuscenes.org/download):
-- **Trainval** split(blobs only)
+
+- **Trainval** split (blobs only)
 - **Map expansion**
 
 ### Organize the directory
@@ -89,24 +131,22 @@ data_root/
 
 > **📢 TODO: Checkpoint links will be added upon paper acceptance and code release.**
 
-All models are evaluated on the nuScenes BEV vehicle segmentation benchmark.
-- **no-vis**: all validation scenes (no visibility filtering)
-- **vis-filt**: only visible (non-occluded) vehicle annotations counted
+All models are evaluated on the nuScenes vehicle BEV segmentation benchmark with the EfficientNet-B4 backbone. IoU is reported under the **no-visibility-filtering** protocol.
 
 ### Full model
 
-| Config | Backbone | Depth | K | FEC-BEV | Input | IoU↑ (no-vis) | IoU↑ (vis-filt) | FPS | Mem (GiB) | Ckpt |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `EN-b4_pand_4-45-41_fec_bev.yaml` | EfficientNet-B4 | PAND | 41 | ✓ | 224×480 | 37.8 | 42.23 | — | — | [TODO] |
-| `EN-b4_pand_4-45-41_fec_bev_448x800.yaml` | EfficientNet-B4 | PAND | 41 | ✓ | 448×800 | 39.5 | 42.23 | — | — | [TODO] |
+| Method   | Input   | IoU↑ |
+| -------- | ------- | ---- |
+| GLAS-BEV | 224×480 | 37.2 |
+| GLAS-BEV | 448×800 | 39.9 |
 
-### Module ablation (EfficientNet-B4, 224x480)
+### Module ablation (224×480, K = 41)
 
-| Config | PAND | FEC-BEV | IoU↑ (no-vis) | IoU↑ (vis-filt) | Ckpt |
-|---|---|---|---|---|---|
-| `EN-b4_pand_4-45-41.yaml` | ✓ | ✗ | 38.20 | — | [TODO] |
-| EN-b4_uniform_4-45-41_Fec_BEV.yaml` | ✗ | ✓ | 38.30 | — | [TODO] |
-| EN-b4_pand_4-45-41_fec_bev.yaml` | ✓ | ✓ | 38.40 | — | [TODO] |
+| PND  | FEC-BEV | IoU↑ |
+| ---- | ------- | ---- |
+| ✗    | ✓       | 35.5 |
+| ✓    | ✗       | 35.8 |
+| ✓    | ✓       | 37.2 |
 
 ---
 
@@ -117,6 +157,7 @@ All experiments use `train_pl.py` with a YAML config:
 ```bash
 python train_pl.py --config <path/to/config.yaml>
 ```
+
 ---
 
 ## :white_check_mark: Test
@@ -135,17 +176,13 @@ python evaluate_pl.py \
 
 ---
 
-## :framed_picture: Visualize
-
-
-
 ## :pray: Acknowledgements
 
 This project builds on the following outstanding works:
 
 - **[Lift, Splat, Shoot](https://github.com/nv-tlabs/lift-splat-shoot)** — Jonah Philion & Sanja Fidler, ECCV 2020. Core view transformer and QuickCumsum voxel pooling.
 - **[FIERY](https://github.com/wayveai/fiery)** — Anthony Hu et al., ICCV 2021. Static BEV segmentation baseline and evaluation protocol.
-- 
+- **[PointBeV](https://github.com/valeoai/PointBeV)** — Valeo.ai. Evaluation protocol and baseline numbers under visibility filtering.
 
 We also thank the [nuScenes](https://www.nuscenes.org/) team for the dataset and annotation tools.
 
@@ -153,15 +190,6 @@ We also thank the [nuScenes](https://www.nuscenes.org/) team for the dataset and
 
 ## :mortar_board: Citation
 
-If you find this work useful, please cite:
-
-```bibtex
-@article{tang2025glasbev,
-  title   = {A Geometry-Aware Lifting and Structural Refinement Framework for Camera-Only BEV Perception},
-  author  = {Yi Tang and others...},
-  journal = {IEEE Transactions on ...},
-  year    = {2025},
-}
-```
+in process...
 
 *(BibTeX will be updated upon publication.)*
