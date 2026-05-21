@@ -16,7 +16,7 @@
 Official implementation of **"GLAS-BEV: A Geometry-Aware Lifting and Structural Refinement Framework for Camera-Only BEV Perception"**.
 
 <p align="center">
-  <img src="src/viz.mp4" alt="BEV vehicle segmentation visualization" width="92%">
+  <img src="src/viz.gif" alt="BEV vehicle segmentation visualization" width="92%">
 </p>
 
 ## :memo: Abstract
