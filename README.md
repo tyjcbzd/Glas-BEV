@@ -16,7 +16,7 @@
 Official implementation of **"GLAS-BEV: A Geometry-Aware Lifting and Structural Refinement Framework for Camera-Only BEV Perception"**.
 
 <p align="center">
-  <img src="src/vis.png" alt="BEV vehicle segmentation visualization" width="92%">
+  <img src="src/viz.png" alt="BEV vehicle segmentation visualization" width="92%">
 </p>
 
 ## :memo: Abstract
@@ -60,7 +60,7 @@ Instead of dividing the metric depth range uniformly, **PND** reallocates depth-
 ### Qualitative results
 
 <p align="center">
-  <img src="src/vis.png" alt="BEV vehicle segmentation visualization" width="92%">
+  <img src="src/viz.png" alt="BEV vehicle segmentation visualization" width="92%">
 </p>
 
 
