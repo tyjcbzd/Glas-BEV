@@ -15,6 +15,10 @@
 
 Official implementation of **"GLAS-BEV: A Geometry-Aware Lifting and Structural Refinement Framework for Camera-Only BEV Perception"**.
 
+<p align="center">
+  <img src="src/vis.png" alt="BEV vehicle segmentation visualization" width="92%">
+</p>
+
 ## :memo: Abstract
 
 Camera-only bird's-eye-view (BEV) perception offers a cost-effective solution for autonomous driving scene understanding, yet Lift-Splat-Shoot based methods often suffer from **inefficient depth sampling** during view transformation and **structural degradation** after BEV aggregation. This paper proposes **GLAS-BEV**, a geometry-aware lifting and structural refinement framework for single-frame multi-camera BEV segmentation.
@@ -56,7 +60,7 @@ Instead of dividing the metric depth range uniformly, **PND** reallocates depth-
 ### Qualitative results
 
 <p align="center">
-  <img src="src/vis.mp4" alt="BEV vehicle segmentation visualization" width="92%">
+  <img src="src/vis.png" alt="BEV vehicle segmentation visualization" width="92%">
 </p>
 
 
