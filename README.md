@@ -167,7 +167,7 @@ python train_pl.py --config <path/to/config.yaml>
 ## :white_check_mark: Test
 
 ```bash
-python evaluate_pl.py --config configs/ablation/EN-b4_pand_4-45-41_fec_bev.yaml
+python evaluate_pl.py --config  <path/to/config.yaml>
 ```
 
 The checkpoint path is read from `eval.ckpt_path` in the config, or can be overridden:
