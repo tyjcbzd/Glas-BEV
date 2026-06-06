@@ -6,6 +6,9 @@
 
 > **📢 TODO: The full codebase will be open-sourced upon paper acceptance. This repository currently serves as a preview of the project structure, model zoo results, and usage documentation.**
 
+- 05.06 submitted to Journal 'Neruocomputing'
+
+
 ## To-do List
 
 - [ ] Release full code
