@@ -6,6 +6,7 @@
 
 > **📢 TODO: The full codebase will be open-sourced upon paper acceptance. This repository currently serves as a preview of the project structure, model zoo results, and usage documentation.**
 
+- 14.06 Submitted to journal 'Neural Networks'
 - 13.06 Reject and Transfer to 'Neural Networks'
 - 05.06 submitted to Journal 'Neruocomputing'
 
